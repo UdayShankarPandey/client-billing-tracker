@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+:root,
+.theme-light {
+  --app-bg: #f3f6fb;
+  --surface: #ffffff;
+  --surface-soft: #eef2f9;
+  --surface-border: #d9e2ec;
+  --text-main: #111827;
+  --text-muted: #475569;
+  --title-gradient-from: #0f766e;
+  --title-gradient-to: #334155;
+  --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --ambient-base: #f3f6fb;
+  --ambient-grad-a: rgba(56, 189, 248, 0.22);
+  --ambient-grad-b: rgba(99, 102, 241, 0.2);
+  --ambient-grad-c: rgba(192, 132, 252, 0.14);
+  --ambient-blob-a: rgba(125, 211, 252, 0.24);
+  --ambient-blob-b: rgba(129, 140, 248, 0.18);
+  --ambient-blob-c: rgba(196, 181, 253, 0.14);
+  --ambient-particle: rgba(59, 130, 246, 0.13);
+  --ambient-cursor-core: rgba(125, 211, 252, 0.32);
+  --ambient-cursor-ring: rgba(129, 140, 248, 0.18);
+  --neon-glow-from: rgba(14, 116, 144, 0.66);
+  --neon-glow-mid: rgba(30, 64, 175, 0.6);
+  --neon-glow-to: rgba(91, 33, 182, 0.66);
+}
+
+.theme-dark {
+  --app-bg: #0f172a;
+  --surface: #1b2638;
+  --surface-soft: #233248;
+  --surface-border: #334155;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --title-gradient-from: #bae6fd;
+  --title-gradient-to: #cbd5e1;
+  --card-shadow: 0 14px 28px rgba(2, 6, 23, 0.35);
+  --ambient-base: #0b1220;
+  --ambient-grad-a: rgba(30, 64, 175, 0.34);
+  --ambient-grad-b: rgba(88, 28, 135, 0.3);
+  --ambient-grad-c: rgba(15, 23, 42, 0.54);
+  --ambient-blob-a: rgba(14, 116, 144, 0.28);
+  --ambient-blob-b: rgba(79, 70, 229, 0.22);
+  --ambient-blob-c: rgba(126, 34, 206, 0.2);
+  --ambient-particle: rgba(148, 163, 184, 0.16);
+  --ambient-cursor-core: rgba(125, 211, 252, 0.3);
+  --ambient-cursor-ring: rgba(167, 139, 250, 0.2);
+  --neon-glow-from: rgba(8, 145, 178, 0.72);
+  --neon-glow-mid: rgba(37, 99, 235, 0.66);
+  --neon-glow-to: rgba(107, 33, 168, 0.7);
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--app-bg);
+  color: var(--text-main);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}

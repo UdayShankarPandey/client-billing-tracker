@@ -1,0 +1,374 @@
+.list-page {
+  animation: pageFade 0.3s ease;
+}
+
+@keyframes pageFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.list-page .card {
+  margin-bottom: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid var(--surface-border);
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+}
+
+@media (min-width: 640px) {
+  .list-page .card {
+    margin-bottom: 0.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .list-page .card {
+    margin-bottom: 1rem;
+  }
+}
+
+.list-page .top-action-btn {
+  border: 1px solid color-mix(in srgb, #0ea5e9 70%, var(--surface-border));
+  border-radius: 0.75rem;
+  min-width: 9.5rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.9rem;
+  box-shadow:
+    0 10px 22px color-mix(in srgb, #0284c7 28%, transparent),
+    0 0 0 1px color-mix(in srgb, #e0f2fe 55%, transparent) inset;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .list-page .top-action-btn {
+    min-width: 10rem;
+    padding: 0.72rem 1.2rem;
+    font-size: 0.92rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .list-page .top-action-btn {
+    min-width: 10.5rem;
+    padding: 0.8rem 1.4rem;
+    font-size: 0.95rem;
+  }
+}
+
+.list-page .top-action-btn:hover {
+  cursor: pointer;
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 26px color-mix(in srgb, #0284c7 40%, transparent),
+    0 0 0 1px color-mix(in srgb, #e0f2fe 75%, transparent) inset;
+}
+
+.theme-dark .list-page .top-action-btn {
+  border-color: color-mix(in srgb, #67e8f9 68%, #334155);
+  box-shadow:
+    0 12px 24px color-mix(in srgb, #0ea5e9 42%, transparent),
+    0 0 0 1px color-mix(in srgb, #67e8f9 30%, transparent) inset;
+}
+
+.theme-dark .list-page .top-action-btn:hover {
+  box-shadow:
+    0 16px 30px color-mix(in srgb, #22d3ee 55%, transparent),
+    0 0 0 1px color-mix(in srgb, #67e8f9 48%, transparent) inset;
+}
+
+.list-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+@media (min-width: 640px) {
+  .list-page .form-group {
+    gap: 0.65rem;
+  }
+}
+
+.list-page .form-group label {
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .list-page .form-group label {
+    font-size: 0.83rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .list-page .form-group label {
+    font-size: 0.86rem;
+  }
+}
+
+.list-page .form-group label .required {
+  color: #ef4444;
+}
+
+.list-page :is(input, textarea, select) {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--surface-border) 85%, transparent);
+  background: color-mix(in srgb, var(--surface-soft) 70%, var(--surface) 30%);
+  color: var(--text-main);
+  padding: 0.7rem 0.8rem;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .list-page :is(input, textarea, select) {
+    padding: 0.72rem 0.85rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .list-page :is(input, textarea, select) {
+    padding: 0.68rem 0.85rem;
+    font-size: 0.95rem;
+  }
+}
+
+.list-page :is(input, textarea, select)::placeholder {
+  color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+}
+
+.list-page :is(input, textarea, select):hover {
+  border-color: color-mix(in srgb, #38bdf8 45%, var(--surface-border));
+}
+
+.list-page :is(input, textarea, select):focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #38bdf8 25%, transparent);
+  background: color-mix(in srgb, var(--surface) 85%, var(--surface-soft) 15%);
+}
+
+.list-page :is(input, textarea, select):disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--surface-soft) 80%, transparent);
+}
+
+.list-page select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) calc(50% - 3px),
+    calc(100% - 11px) calc(50% - 3px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2.3rem;
+}
+
+.list-page select option {
+  background: var(--surface);
+  color: var(--text-main);
+}
+
+.list-page input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #0ea5e9;
+}
+
+.list-page .worklog-picker {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, var(--surface-border) 80%, transparent);
+  border-radius: 0.75rem;
+  padding: 0.65rem;
+  background: color-mix(in srgb, var(--surface-soft) 65%, transparent);
+}
+
+.list-page .worklog-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+  font-size: 0.9rem;
+}
+
+.list-page .worklog-item:last-child {
+  margin-bottom: 0;
+}
+
+.list-page table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.list-page th {
+  border-bottom: 1px solid var(--surface-border);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.85rem 0.75rem;
+  text-align: left;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.list-page td {
+  border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 55%, transparent);
+  color: var(--text-main);
+  font-size: 0.92rem;
+  padding: 0.95rem 0.75rem;
+}
+
+.list-page tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-soft) 60%, transparent);
+}
+
+.data-table-wrap {
+  max-height: 62vh;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--surface-border) 60%, transparent);
+  border-radius: 0.75rem;
+}
+
+.data-table-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.data-table-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.data-table-export-btn {
+  border-radius: 9999px;
+  border: 2px solid color-mix(in srgb, #22d3ee 70%, var(--surface-border));
+  min-width: 7.75rem;
+  cursor: pointer;
+}
+
+.data-table-export-btn:hover {
+  cursor: pointer;
+}
+
+.theme-dark .data-table-export-btn {
+  border-color: color-mix(in srgb, #67e8f9 70%, #334155);
+}
+
+.data-table-column-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+
+.data-table-sort {
+  all: unset;
+  cursor: pointer;
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.list-page .badge-paid {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.list-page .badge-pending {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde68a;
+}
+
+.list-page .badge-overdue {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.list-page .badge-draft {
+  background: #e0f2fe;
+  color: #0c4a6e;
+  border: 1px solid #bae6fd;
+}
+
+.list-page .badge-sent {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.list-page .badge-partially-paid {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
+}
+
+.theme-dark .list-page .badge-overdue {
+  background: rgba(239, 68, 68, 0.22);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.theme-dark .list-page .badge-draft {
+  background: rgba(3, 102, 214, 0.2);
+  color: #38bdf8;
+  border-color: rgba(3, 102, 214, 0.35);
+}
+
+.theme-dark .list-page .badge-sent {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.theme-dark .list-page .badge-partially-paid {
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.theme-dark .list-page .badge-paid {
+  background: rgba(16, 185, 129, 0.22);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.theme-dark .list-page .badge-pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+@media (max-width: 768px) {
+  .list-page table {
+    font-size: 0.86rem;
+  }
+}

@@ -1,0 +1,58 @@
+/**
+ * FLOATING NAVBAR DESIGN SYSTEM
+ * 
+ * Modern, lightweight navbar with glassmorphic effects
+ * - Floating container with top & side spacing
+ * - Soft shadows and backdrop blur
+ * - Large rounded corners (rounded-2xl)
+ * - Smooth transitions and animations
+ */
+
+/* Smooth transition for navbar appearance changes */
+nav {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Enhanced shadow depth for floating effect */
+nav {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+nav:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+}
+
+/* Dark mode shadow adjustment */
+nav.dark {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+}
+
+/* Profile button smooth interactions */
+nav button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Rounded pill styling for profile button */
+nav button[aria-haspopup="true"] {
+  backdrop-filter: blur(4px);
+}
+
+/* Dropdown menu glassmorphic styling */
+nav > div > div > div:last-child {
+  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

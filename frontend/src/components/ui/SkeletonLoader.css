@@ -1,0 +1,82 @@
+/* Skeleton Loader Animations */
+
+@keyframes skeleton-anim {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes shine {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-loader.compact {
+  gap: 6px;
+}
+
+.skeleton-block {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Table Skeleton */
+.skeleton-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.skeleton-table-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+}
+
+.skeleton-table-row:last-child {
+  border-bottom: none;
+}
+
+.skeleton-table-row .skeleton-block {
+  flex-shrink: 0;
+}
+
+/* Card Skeleton */
+.skeleton-card {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  padding: 16px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .skeleton-block {
+    background: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%) !important;
+  }
+
+  .skeleton-table-row {
+    border-color: #333;
+  }
+
+  .skeleton-card {
+    background: #1a1a1a;
+  }
+}
