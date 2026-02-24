@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { PERMISSIONS, readStoredUser, userHasPermission } from "../utils/rbac";
-import "./sidebar.css"; // 👈 IMPORTANT
+import "./Sidebar.css";
 
 const menuItems = [
   { label: "Dashboard", path: "/", icon: "dashboard", permission: PERMISSIONS.VIEW_DASHBOARD },
