@@ -23,8 +23,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "staff", "viewer", "client"],
-      default: "viewer",
+      enum: ["admin", "staff", "client"],
+      default: "staff",
     },
     clientId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -74,7 +74,6 @@ const LoginPage = ({ setIsAuthenticated }) => {
             <select value={role} onChange={(e) => setRole(e.target.value)} required disabled={loading}>
               <option value={ROLES.ADMIN}>Admin</option>
               <option value={ROLES.STAFF}>Staff</option>
-              <option value={ROLES.VIEWER}>Viewer</option>
               <option value={ROLES.CLIENT}>Client</option>
             </select>
           </div>

@@ -7,10 +7,10 @@ exports.createWorkLog = async (req, res) => {
   try {
     const { projectId, clientId, date, hours, description, billable } = req.body;
 
-    const project = await Project.findOne({
-      _id: projectId,
-      userId: req.userId,
-    });
+    const projectQuery = req.userRole === "client"
+      ? { _id: projectId, userId: req.userId }
+      : { _id: projectId };
+    const project = await Project.findOne(projectQuery);
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -41,9 +41,9 @@ exports.getWorkLogs = async (req, res) => {
   try {
     const { projectId, clientId, startDate, endDate, billable } = req.query;
 
-    const filter = { userId: req.userId };
+    const filter = req.userRole === "client" ? { clientId: req.clientId } : {};
     if (projectId) filter.projectId = projectId;
-    if (clientId) filter.clientId = clientId;
+    if (clientId && req.userRole !== "client") filter.clientId = clientId;
     if (billable !== undefined) filter.billable = billable === "true";
 
     if (startDate || endDate) {
@@ -65,10 +65,10 @@ exports.getWorkLogs = async (req, res) => {
 // Get single work log
 exports.getWorkLogById = async (req, res) => {
   try {
-    const workLog = await WorkLog.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    }).populate(["projectId", "clientId"]);
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const workLog = await WorkLog.findOne(query).populate(["projectId", "clientId"]);
 
     if (!workLog) {
       return res.status(404).json({ message: "Work log not found" });
@@ -85,10 +85,10 @@ exports.updateWorkLog = async (req, res) => {
   try {
     const { date, hours, description, billable } = req.body;
 
-    const workLog = await WorkLog.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const workLog = await WorkLog.findOne(query);
 
     if (!workLog) {
       return res.status(404).json({ message: "Work log not found" });
@@ -116,10 +116,10 @@ exports.updateWorkLog = async (req, res) => {
 // Delete work log
 exports.deleteWorkLog = async (req, res) => {
   try {
-    const workLog = await WorkLog.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const workLog = await WorkLog.findOne(query);
 
     if (!workLog) {
       return res.status(404).json({ message: "Work log not found" });

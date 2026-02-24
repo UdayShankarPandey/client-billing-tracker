@@ -24,7 +24,7 @@ A full-stack MERN SaaS application for agencies and freelancers to manage client
 - **Invoicing System**: Auto-generate invoices from work logs with status management and PDF download capability
 - **Payment Tracking**: Record and track payments with multiple payment methods and transaction IDs
 - **Expense Management**: Track project expenses with categories, status workflow, vendor information, and attachments
-- **User Management**: RBAC with admin, staff, viewer, and client roles; user creation and role management
+- **User Management**: RBAC with admin, staff, and client roles; user creation and role management
 - **Client Portal**: Dedicated portal for clients to view their invoices and project information
 - **Dashboard**: Real-time metrics including revenue trends, project profitability, expense analytics, and outstanding balances
 
@@ -348,7 +348,7 @@ npm run preview  # Preview production build
 - `name`: String (required)
 - `email`: String (required, unique)
 - `password`: String (hashed with bcryptjs)
-- `role`: String (enum: admin, staff, viewer, client) - determines access permissions
+- `role`: String (enum: admin, staff, client) - determines access permissions
 - `clientId`: ObjectId (reference to Client) - null for internal users, set for client portal users
 - `company`: String (optional)
 - `phone`: String (optional)
@@ -455,7 +455,7 @@ npm run preview  # Preview production build
 ### Who Can Access What?
 - **Admin**: Full system access - manage all users, clients, projects, invoices, payments, and expenses
 - **Staff**: Can create and manage clients, projects, work logs, invoices, and payments; cannot manage users
-- **Viewer**: Read-only access to all data; cannot create or modify anything
+- **Viewer**: Removed
 - **Client**: Limited access - can only view their own invoices and project information via client portal
 
 ### Security Features
@@ -551,7 +551,7 @@ npm run preview  # Preview production build
   - Mark expenses as tax-deductible
 - **Users** (`/users`) - User management (admin only)
   - View all registered users
-  - Manage user roles (staff, viewer, client)
+  - Manage user roles (staff, client)
   - Delete users (except admin)
   - Create client portal accounts
 - **Profile** (`/profile`) - User account settings
@@ -627,7 +627,7 @@ npm install
 - Delete all cookies for localhost
 - Check browser DevTools Console (F12) for JavaScript errors
 - Verify JWT token is being stored correctly in localStorage
-- Check that user role is valid (admin, staff, viewer, or client)
+- Check that user role is valid (admin, staff, or client)
 
 **Build Errors (npm run build)**
 - Delete `node_modules` and reinstall: `rm -r node_modules && npm install`
@@ -656,7 +656,7 @@ npm install
 
 **Cannot Update User Role**
 - Admin user cannot be changed to other roles
-- Admin user can only manage staff, viewer, and client roles
+- Admin user can only manage staff and client roles
 - Cannot assign admin role to other users (single admin per system)
 
 ### File Upload Issues

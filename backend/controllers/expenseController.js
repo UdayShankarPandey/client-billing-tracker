@@ -43,7 +43,29 @@ exports.getExpenses = async (req, res) => {
   try {
     const { category, status, projectId, startDate, endDate, sortBy = "-date" } = req.query;
 
-    let filter = { userId: req.userId };
+    const Project = require("../models/Project");
+    let filter = {};
+
+    // For clients, only show expenses from their assigned projects
+    if (req.userRole === "client") {
+      if (req.clientId) {
+        const clientProjects = await Project.find({ clientId: req.clientId }).select("_id");
+        const projectIds = clientProjects.map(p => p._id);
+        
+        if (projectIds.length === 0) {
+          // Client has no projects, return empty array
+          return res.json([]);
+        }
+        
+        // Expenses should be associated with client's projects
+        filter.projectId = { $in: projectIds };
+        console.log(`[Expense] Client ${req.userId} - showing expenses for ${projectIds.length} projects`);
+      } else {
+        // Client with no clientId assignment - return empty
+        console.log(`[Expense] Client ${req.userId} has no clientId assigned`);
+        return res.json([]);
+      }
+    }
 
     // Apply filters
     if (category) {
@@ -52,7 +74,8 @@ exports.getExpenses = async (req, res) => {
     if (status) {
       filter.status = status;
     }
-    if (projectId) {
+    if (projectId && req.userRole !== "client") {
+      // Only allow project filter for non-clients
       filter.projectId = projectId;
     }
     if (startDate || endDate) {
@@ -79,10 +102,10 @@ exports.getExpenses = async (req, res) => {
 // Get single expense
 exports.getExpenseById = async (req, res) => {
   try {
-    const expense = await Expense.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    }).populate("projectId");
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const expense = await Expense.findOne(query).populate("projectId");
 
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
@@ -99,10 +122,10 @@ exports.updateExpense = async (req, res) => {
   try {
     const { category, description, amount, vendor, date, status, paymentMethod, receipt, notes, tags, taxDeductible, projectId } = req.body;
 
-    const expense = await Expense.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const expense = await Expense.findOne(query);
 
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
@@ -137,10 +160,10 @@ exports.updateExpense = async (req, res) => {
 // Delete expense
 exports.deleteExpense = async (req, res) => {
   try {
-    const expense = await Expense.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const expense = await Expense.findOneAndDelete(query);
 
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
@@ -156,7 +179,7 @@ exports.deleteExpense = async (req, res) => {
 exports.getExpenseSummary = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-    const match = { userId: new mongoose.Types.ObjectId(req.userId) };
+    const match = req.userRole === "client" ? { userId: new mongoose.Types.ObjectId(req.userId) } : {};
 
     if (startDate || endDate) {
       match.date = {};
@@ -234,7 +257,7 @@ exports.getExpenseSummary = async (req, res) => {
 exports.getExpensesByCategory = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-    const match = { userId: new mongoose.Types.ObjectId(req.userId) };
+    const match = req.userRole === "client" ? { userId: new mongoose.Types.ObjectId(req.userId) } : {};
 
     if (startDate || endDate) {
       match.date = {};
@@ -267,8 +290,9 @@ exports.getExpensesByCategory = async (req, res) => {
 // Get expenses by month
 exports.getExpensesByMonth = async (req, res) => {
   try {
+    const match = req.userRole === "client" ? { userId: new mongoose.Types.ObjectId(req.userId) } : {};
     const byMonth = await Expense.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
+      { $match: match },
       {
         $group: {
           _id: {
@@ -308,8 +332,11 @@ exports.bulkUpdateStatus = async (req, res) => {
 
     const objectIds = expenseIds.map((id) => new mongoose.Types.ObjectId(id));
 
+    const query = req.userRole === "client"
+      ? { _id: { $in: objectIds }, userId: req.userId }
+      : { _id: { $in: objectIds } };
     const result = await Expense.updateMany(
-      { _id: { $in: objectIds }, userId: req.userId },
+      query,
       { status }
     );
 

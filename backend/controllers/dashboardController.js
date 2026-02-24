@@ -3,7 +3,8 @@ const { getDashboardSummary, getMonthlyRevenue, getProjectProfit, getRevenueTren
 // Get dashboard summary
 exports.getDashboard = async (req, res) => {
   try {
-    const summary = await getDashboardSummary(req.userId);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const summary = await getDashboardSummary(userId);
     res.json(summary);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -19,7 +20,8 @@ exports.getMonthlyRevenue = async (req, res) => {
       return res.status(400).json({ message: "Month and year are required" });
     }
 
-    const revenue = await getMonthlyRevenue(req.userId, parseInt(month), parseInt(year));
+    const userId = req.userRole === "client" ? req.userId : null;
+    const revenue = await getMonthlyRevenue(userId, parseInt(month), parseInt(year));
     res.json(revenue);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -39,7 +41,8 @@ exports.getProjectProfit = async (req, res) => {
 // Get revenue trend for last 12 months
 exports.getRevenueTrend = async (req, res) => {
   try {
-    const trend = await getRevenueTrend(req.userId);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const trend = await getRevenueTrend(userId);
     res.json(trend);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -49,7 +52,8 @@ exports.getRevenueTrend = async (req, res) => {
 // Get invoice status breakdown
 exports.getInvoiceStatusBreakdown = async (req, res) => {
   try {
-    const breakdown = await getInvoiceStatusBreakdown(req.userId);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const breakdown = await getInvoiceStatusBreakdown(userId);
     res.json(breakdown);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -60,7 +64,8 @@ exports.getInvoiceStatusBreakdown = async (req, res) => {
 exports.getTopClientsByRevenue = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : 5;
-    const clients = await getTopClientsByRevenue(req.userId, limit);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const clients = await getTopClientsByRevenue(userId, limit);
     res.json(clients);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -71,7 +76,8 @@ exports.getTopClientsByRevenue = async (req, res) => {
 exports.getProjectProfitability = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : 5;
-    const projects = await getProjectProfitability(req.userId, limit);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const projects = await getProjectProfitability(userId, limit);
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -81,7 +87,8 @@ exports.getProjectProfitability = async (req, res) => {
 // Get user profit (revenue - expenses)
 exports.getUserProfit = async (req, res) => {
   try {
-    const profit = await calculateUserProfit(req.userId);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const profit = await calculateUserProfit(userId);
     res.json(profit);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -97,7 +104,8 @@ exports.getMonthlyExpenses = async (req, res) => {
       return res.status(400).json({ message: "Month and year are required" });
     }
 
-    const expenses = await getMonthlyExpenses(req.userId, parseInt(month), parseInt(year));
+    const userId = req.userRole === "client" ? req.userId : null;
+    const expenses = await getMonthlyExpenses(userId, parseInt(month), parseInt(year));
     res.json(expenses);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -107,7 +115,8 @@ exports.getMonthlyExpenses = async (req, res) => {
 // Get expenses trend for last 12 months
 exports.getExpensesTrend = async (req, res) => {
   try {
-    const trend = await getExpensesTrend(req.userId);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const trend = await getExpensesTrend(userId);
     res.json(trend);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -117,7 +126,8 @@ exports.getExpensesTrend = async (req, res) => {
 // Get expenses by category
 exports.getExpensesByCategory = async (req, res) => {
   try {
-    const breakdown = await getExpensesByCategory(req.userId);
+    const userId = req.userRole === "client" ? req.userId : null;
+    const breakdown = await getExpensesByCategory(userId);
     res.json(breakdown);
   } catch (error) {
     res.status(500).json({ error: error.message });

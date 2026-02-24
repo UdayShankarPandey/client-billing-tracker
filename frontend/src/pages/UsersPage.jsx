@@ -4,7 +4,7 @@ import StateWrapper from "../components/ui/StateWrapper";
 import SkeletonLoader from "../components/ui/SkeletonLoader";
 import "./ListPage.css";
 
-const roleOptions = ["staff", "viewer", "client"];
+const roleOptions = ["staff", "client"];
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);

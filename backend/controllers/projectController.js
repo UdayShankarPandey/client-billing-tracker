@@ -27,7 +27,8 @@ exports.createProject = async (req, res) => {
 // Get all projects
 exports.getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ userId: req.userId })
+    const filter = req.userRole === "client" ? { clientId: req.clientId } : {};
+    const projects = await Project.find(filter)
       .populate("clientId")
       .sort({ createdAt: -1 });
     res.json(projects);
@@ -39,10 +40,11 @@ exports.getProjects = async (req, res) => {
 // Get projects by client
 exports.getProjectsByClient = async (req, res) => {
   try {
-    const projects = await Project.find({
-      userId: req.userId,
-      clientId: req.params.clientId,
-    })
+    const filter = { clientId: req.params.clientId };
+    if (req.userRole === "client") {
+      filter.userId = req.userId;
+    }
+    const projects = await Project.find(filter)
       .populate("clientId")
       .sort({ createdAt: -1 });
 
@@ -55,10 +57,10 @@ exports.getProjectsByClient = async (req, res) => {
 // Get single project with summary
 exports.getProjectById = async (req, res) => {
   try {
-    const project = await Project.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    }).populate("clientId");
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const project = await Project.findOne(query).populate("clientId");
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -83,8 +85,11 @@ exports.updateProject = async (req, res) => {
   try {
     const { name, description, hourlyRate, budget, status, startDate, endDate } = req.body;
 
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
     const project = await Project.findOneAndUpdate(
-      { _id: req.params.id, userId: req.userId },
+      query,
       { name, description, hourlyRate, budget, status, startDate, endDate },
       { new: true, runValidators: true }
     ).populate("clientId");
@@ -102,10 +107,10 @@ exports.updateProject = async (req, res) => {
 // Delete project
 exports.deleteProject = async (req, res) => {
   try {
-    const project = await Project.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const project = await Project.findOneAndDelete(query);
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });

@@ -52,10 +52,25 @@ exports.getInvoices = async (req, res) => {
   try {
     const { clientId, status, startDate, endDate } = req.query;
 
-    const filter = req.userRole === "client"
-      ? { clientId: req.clientId }
-      : { userId: req.userId };
-    if (clientId && req.userRole !== "client") filter.clientId = clientId;
+    const filter = {};
+    
+    if (req.userRole === "client") {
+      // Client can only see invoices for their assigned client
+      if (req.clientId) {
+        filter.clientId = req.clientId;
+        console.log(`[Invoice] Client ${req.userId} requesting invoices for clientId: ${req.clientId}`);
+      } else {
+        // If client has no clientId, return empty array
+        console.log(`[Invoice] Client ${req.userId} has no clientId assigned`);
+        return res.json([]);
+      }
+    } else if (clientId) {
+      // Admin/staff can filter by specific client
+      filter.clientId = clientId;
+      console.log(`[Invoice] Admin/Staff ${req.userId} filtering by clientId: ${clientId}`);
+    } else {
+      console.log(`[Invoice] Admin/Staff ${req.userId} requesting all invoices`);
+    }
     if (status) filter.status = status;
 
     if (startDate || endDate) {
@@ -67,6 +82,8 @@ exports.getInvoices = async (req, res) => {
     let invoices = await Invoice.find(filter)
       .populate(req.userRole === "client" ? ["clientId"] : ["clientId", "projectId"])
       .sort({ issueDate: -1 });
+
+    console.log(`[Invoice] Found ${invoices.length} invoices with filter:`, filter);
 
     // Auto-update status for invoices that may have become overdue
     const now = new Date();
@@ -91,7 +108,7 @@ exports.getInvoiceById = async (req, res) => {
     const query =
       req.userRole === "client"
         ? { _id: req.params.id, clientId: req.clientId }
-        : { _id: req.params.id, userId: req.userId };
+        : { _id: req.params.id };
 
     const invoiceQuery = Invoice.findOne(query);
     if (req.userRole === "client") {
@@ -126,10 +143,10 @@ exports.updateInvoice = async (req, res) => {
   try {
     const { status, notes, dueDate, taxPercentage, taxEnabled } = req.body;
 
-    const invoice = await Invoice.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, clientId: req.clientId }
+      : { _id: req.params.id };
+    const invoice = await Invoice.findOne(query);
 
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
@@ -204,10 +221,10 @@ exports.recordPayment = async (req, res) => {
       return res.status(400).json({ message: "Invalid payment amount" });
     }
 
-    const ownInvoice = await Invoice.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, clientId: req.clientId }
+      : { _id: req.params.id };
+    const ownInvoice = await Invoice.findOne(query);
 
     if (!ownInvoice) {
       return res.status(404).json({ message: "Invoice not found" });
@@ -227,10 +244,10 @@ exports.recordPayment = async (req, res) => {
 // STAFF: Can only delete draft invoices
 exports.deleteInvoice = async (req, res) => {
   try {
-    const invoice = await Invoice.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, clientId: req.clientId }
+      : { _id: req.params.id };
+    const invoice = await Invoice.findOne(query);
 
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
@@ -260,7 +277,7 @@ exports.getInvoiceStats = async (req, res) => {
     const filter =
       req.userRole === "client"
         ? { clientId: req.clientId }
-        : { userId: req.userId, clientId: req.params.clientId };
+        : { clientId: req.params.clientId };
     const invoices = await Invoice.find(filter);
 
     const stats = {
@@ -284,7 +301,7 @@ exports.downloadInvoicePdf = async (req, res) => {
     const query =
       req.userRole === "client"
         ? { _id: req.params.id, clientId: req.clientId }
-        : { _id: req.params.id, userId: req.userId };
+        : { _id: req.params.id };
 
     const invoice = await Invoice.findOne(query).populate(["clientId", "projectId", "workLogIds"]);
 

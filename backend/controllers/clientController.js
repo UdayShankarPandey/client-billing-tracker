@@ -29,7 +29,8 @@ exports.createClient = async (req, res) => {
 // Get all clients for user
 exports.getClients = async (req, res) => {
   try {
-    const clients = await Client.find({ userId: req.userId }).sort({ createdAt: -1 });
+    const filter = req.userRole === "client" ? { userId: req.userId } : {};
+    const clients = await Client.find(filter).sort({ createdAt: -1 });
     res.json(clients);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -39,10 +40,10 @@ exports.getClients = async (req, res) => {
 // Get single client
 exports.getClientById = async (req, res) => {
   try {
-    const client = await Client.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const client = await Client.findOne(query);
 
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
@@ -59,8 +60,11 @@ exports.updateClient = async (req, res) => {
   try {
     const { name, email, company, phone, billingRate, address, status } = req.body;
 
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
     const client = await Client.findOneAndUpdate(
-      { _id: req.params.id, userId: req.userId },
+      query,
       { name, email, company, phone, billingRate, address, status },
       { new: true, runValidators: true }
     );
@@ -78,10 +82,10 @@ exports.updateClient = async (req, res) => {
 // Delete client
 exports.deleteClient = async (req, res) => {
   try {
-    const client = await Client.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, userId: req.userId }
+      : { _id: req.params.id };
+    const client = await Client.findOneAndDelete(query);
 
     if (!client) {
       return res.status(404).json({ message: "Client not found" });

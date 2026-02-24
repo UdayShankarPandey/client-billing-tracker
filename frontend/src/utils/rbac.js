@@ -1,7 +1,6 @@
 export const ROLES = {
   ADMIN: "admin",
   STAFF: "staff",
-  VIEWER: "viewer",
   CLIENT: "client",
 };
 
@@ -80,12 +79,12 @@ const ROLE_PERMISSIONS = {
     // Profile
     PERMISSIONS.VIEW_PROFILE,
   ],
-  [ROLES.VIEWER]: [
+
+  [ROLES.CLIENT]: [
     // Dashboard & Analytics
     PERMISSIONS.VIEW_DASHBOARD,
     
-    // View-only access
-    PERMISSIONS.VIEW_CLIENTS,
+    // View-only access (same as staff but without management permissions)
     PERMISSIONS.VIEW_PROJECTS,
     PERMISSIONS.VIEW_WORK_LOGS,
     PERMISSIONS.VIEW_INVOICES,
@@ -93,10 +92,6 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_EXPENSES,
     
     // Profile
-    PERMISSIONS.VIEW_PROFILE,
-  ],
-  [ROLES.CLIENT]: [
-    // Client Portal
     PERMISSIONS.VIEW_PROFILE,
     PERMISSIONS.VIEW_CLIENT_PORTAL,
   ],

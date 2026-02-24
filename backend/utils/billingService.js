@@ -286,10 +286,10 @@ const getMonthlyRevenue = async (userId, month, year) => {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
-  const invoices = await Invoice.find({
-    userId,
-    issueDate: { $gte: startDate, $lte: endDate },
-  });
+  const filter = { issueDate: { $gte: startDate, $lte: endDate } };
+  if (userId) filter.userId = userId;
+
+  const invoices = await Invoice.find(filter);
   const { revenueCents, paidCents, dueCents } = sumInvoiceSummaryCents(invoices);
   const invoiceCount = invoices.length;
 
@@ -333,10 +333,15 @@ const getDashboardSummary = async (userId) => {
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
 
-  const clients = await Client.find({ userId });
-  const projects = await Project.find({ userId }).populate("clientId");
-  const workLogs = await WorkLog.find({ userId });
-  const invoices = await Invoice.find({ userId });
+  const clientFilter = userId ? { userId } : {};
+  const projectFilter = userId ? { userId } : {};
+  const workLogFilter = userId ? { userId } : {};
+  const invoiceFilter = userId ? { userId } : {};
+
+  const clients = await Client.find(clientFilter);
+  const projects = await Project.find(projectFilter).populate("clientId");
+  const workLogs = await WorkLog.find(workLogFilter);
+  const invoices = await Invoice.find(invoiceFilter);
   const { revenueCents, paidCents, dueCents } = sumInvoiceSummaryCents(invoices);
 
   const monthlyRevenue = await getMonthlyRevenue(userId, currentMonth, currentYear);
@@ -359,7 +364,8 @@ const getDashboardSummary = async (userId) => {
  * @returns {Promise<array>} Monthly revenue trend data
  */
 const getRevenueTrend = async (userId) => {
-  const invoices = await Invoice.find({ userId });
+  const filter = userId ? { userId } : {};
+  const invoices = await Invoice.find(filter);
   const monthlyData = {};
 
   // Initialize last 12 months
@@ -398,7 +404,8 @@ const getRevenueTrend = async (userId) => {
  * @returns {Promise<object>} Invoice status counts
  */
 const getInvoiceStatusBreakdown = async (userId) => {
-  const invoices = await Invoice.find({ userId });
+  const filter = userId ? { userId } : {};
+  const invoices = await Invoice.find(filter);
   const breakdown = {
     paid: 0,
     pending: 0,
@@ -433,7 +440,8 @@ const getInvoiceStatusBreakdown = async (userId) => {
  * @returns {Promise<array>} Top clients data
  */
 const getTopClientsByRevenue = async (userId, limit = 5) => {
-  const invoices = await Invoice.find({ userId }).populate('clientId');
+  const filter = userId ? { userId } : {};
+  const invoices = await Invoice.find(filter).populate('clientId');
   const clientRevenue = {};
 
   invoices.forEach((invoice) => {
@@ -462,7 +470,8 @@ const getTopClientsByRevenue = async (userId, limit = 5) => {
  * @returns {Promise<array>} Project profitability data
  */
 const getProjectProfitability = async (userId, limit = 5) => {
-  const projects = await Project.find({ userId });
+  const filter = userId ? { userId } : {};
+  const projects = await Project.find(filter);
   const projectData = [];
 
   for (const project of projects) {
@@ -485,7 +494,10 @@ const getProjectProfitability = async (userId, limit = 5) => {
  * @returns {Promise<number>} Total expenses
  */
 const calculateTotalExpenses = async (userId, status = null) => {
-  const match = { userId: new mongoose.Types.ObjectId(userId) };
+  const match = {};
+  if (userId) {
+    match.userId = new mongoose.Types.ObjectId(userId);
+  }
   if (status) {
     match.status = status;
   }
@@ -513,7 +525,8 @@ const getApprovedExpenses = async (userId) => {
  * @returns {Promise<object>} Profit summary
  */
 const calculateUserProfit = async (userId) => {
-  const invoices = await Invoice.find({ userId });
+  const filter = userId ? { userId } : {};
+  const invoices = await Invoice.find(filter);
   const { revenueCents } = sumInvoiceSummaryCents(invoices);
   const revenue = fromCents(revenueCents);
   
@@ -539,11 +552,13 @@ const getMonthlyExpenses = async (userId, month, year) => {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
-  const expenses = await Expense.find({
-    userId,
+  const filter = {
     date: { $gte: startDate, $lte: endDate },
     status: { $in: ["approved", "paid"] },
-  });
+  };
+  if (userId) filter.userId = userId;
+
+  const expenses = await Expense.find(filter);
 
   const total = expenses.reduce((sum, exp) => sum + asNumber(exp.amount), 0);
   const approved = expenses
@@ -569,10 +584,11 @@ const getMonthlyExpenses = async (userId, month, year) => {
  * @returns {Promise<array>} Monthly expenses trend data
  */
 const getExpensesTrend = async (userId) => {
-  const expenses = await Expense.find({
-    userId,
+  const filter = {
     status: { $in: ["approved", "paid"] },
-  });
+  };
+  if (userId) filter.userId = userId;
+  const expenses = await Expense.find(filter);
 
   const monthlyData = {};
 
@@ -609,10 +625,11 @@ const getExpensesTrend = async (userId) => {
  * @returns {Promise<array>} Expenses breakdown by category
  */
 const getExpensesByCategory = async (userId) => {
-  const expenses = await Expense.find({
-    userId,
+  const filter = {
     status: { $in: ["approved", "paid"] },
-  });
+  };
+  if (userId) filter.userId = userId;
+  const expenses = await Expense.find(filter);
 
   const categoryData = {};
 
@@ -642,10 +659,11 @@ const getProjectProfitWithExpenses = async (projectId) => {
 
   const earnings = await calculateProjectEarnings(projectId);
   
-  const projectExpenses = await Expense.find({
+  const projectExpensesFilter = {
     projectId,
     status: { $in: ["approved", "paid"] },
-  });
+  };
+  const projectExpenses = await Expense.find(projectExpensesFilter);
   
   const expenses = roundCurrency(
     projectExpenses.reduce((sum, exp) => sum + asNumber(exp.amount), 0)

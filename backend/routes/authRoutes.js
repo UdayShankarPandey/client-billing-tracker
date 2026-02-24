@@ -8,7 +8,7 @@ const { authMiddleware, requireRoles } = require("../middlewares/auth");
 
 // REGISTER
 // Rule: Only the first user registered becomes ADMIN
-// All subsequent users become VIEWER by default
+// All subsequent users become STAFF by default
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -29,7 +29,7 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: hasAdmin ? "viewer" : "admin", // Ensure only one admin
+      role: hasAdmin ? "staff" : "admin", // Ensure only one admin
     });
 
     res.status(201).json({ message: "User registered successfully", userId: user._id });
@@ -47,7 +47,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    if (role && !["admin", "staff", "viewer", "client"].includes(role)) {
+    if (role && !["admin", "staff", "client"].includes(role)) {
       return res.status(400).json({ message: "Invalid role selected" });
     }
 
@@ -65,8 +65,22 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Selected role does not match this account" });
     }
 
+    // For client users, match email to Client record
+    let clientId = user.clientId || null;
+    if (user.role === "client" && !clientId) {
+      const clientRecord = await Client.findOne({ email: user.email });
+      if (clientRecord) {
+        clientId = clientRecord._id;
+        console.log(`[Auth] Client user ${user.email} matched to Client record: ${clientId}`);
+      } else {
+        console.log(`[Auth] Client user ${user.email} - no matching Client record found`);
+      }
+    } else if (user.role === "client" && clientId) {
+      console.log(`[Auth] Client user ${user.email} already has clientId: ${clientId}`);
+    }
+
     const token = jwt.sign(
-      { id: user._id, role: user.role, clientId: user.clientId || null },
+      { id: user._id, role: user.role, clientId },
       process.env.JWT_SECRET,
       {
       expiresIn: "7d",
@@ -81,7 +95,7 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        clientId: user.clientId || null,
+        clientId,
       },
     });
   } catch (error) {
@@ -131,7 +145,7 @@ router.get("/users", authMiddleware, requireRoles("admin"), async (req, res) => 
 
 // ADMIN: UPDATE USER ROLE
 // Rules:
-// - Can only assign roles: staff, viewer, client (never admin)
+// - Can only assign roles: staff, client (never admin)
 // - Cannot change own role
 // - Cannot change admin user's role
 router.put("/users/:id/role", authMiddleware, requireRoles("admin"), async (req, res) => {
@@ -139,7 +153,7 @@ router.put("/users/:id/role", authMiddleware, requireRoles("admin"), async (req,
     const { role } = req.body;
     
     // Prevent assigning admin role (single admin only)
-    if (!["staff", "viewer", "client"].includes(role)) {
+    if (!["staff", "client"].includes(role)) {
       return res.status(400).json({ message: "Invalid role. Admin role cannot be assigned." });
     }
 

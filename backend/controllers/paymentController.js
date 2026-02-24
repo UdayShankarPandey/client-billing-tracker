@@ -19,7 +19,10 @@ exports.createPayment = async (req, res) => {
       return res.status(400).json({ message: "Invalid payment amount" });
     }
 
-    const invoice = await Invoice.findOne({ _id: invoiceId, userId: req.userId });
+    const invoiceQuery = req.userRole === "client"
+      ? { _id: invoiceId, clientId: req.clientId }
+      : { _id: invoiceId };
+    const invoice = await Invoice.findOne(invoiceQuery);
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
     }
@@ -58,7 +61,7 @@ exports.getPayments = async (req, res) => {
   try {
     const { clientId, invoiceId, startDate, endDate, status } = req.query;
 
-    const filter = req.userRole === "client" ? { clientId: req.clientId } : { userId: req.userId };
+    const filter = req.userRole === "client" ? { clientId: req.clientId } : {};
     if (clientId) filter.clientId = clientId;
     if (invoiceId) filter.invoiceId = invoiceId;
     if (status) filter.status = status;
@@ -85,7 +88,7 @@ exports.getPaymentById = async (req, res) => {
     const query =
       req.userRole === "client"
         ? { _id: req.params.id, clientId: req.clientId }
-        : { _id: req.params.id, userId: req.userId };
+        : { _id: req.params.id };
     const payment = await Payment.findOne(query).populate(["invoiceId", "clientId"]);
 
     if (!payment) {
@@ -104,7 +107,7 @@ exports.getPaymentsByClient = async (req, res) => {
     const filter =
       req.userRole === "client"
         ? { clientId: req.clientId }
-        : { userId: req.userId, clientId: req.params.clientId };
+        : { clientId: req.params.clientId };
     const payments = await Payment.find(filter)
       .populate(["invoiceId", "clientId"])
       .sort({ paymentDate: -1 });
@@ -124,10 +127,10 @@ exports.getPaymentsByClient = async (req, res) => {
 exports.updatePayment = async (req, res) => {
   try {
     const { status, notes } = req.body;
-    const existingPayment = await Payment.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, clientId: req.clientId }
+      : { _id: req.params.id };
+    const existingPayment = await Payment.findOne(query);
 
     if (!existingPayment) {
       return res.status(404).json({ message: "Payment not found" });
@@ -135,7 +138,7 @@ exports.updatePayment = async (req, res) => {
     const wasCompleted = existingPayment.status === "completed";
 
     const payment = await Payment.findOneAndUpdate(
-      { _id: req.params.id, userId: req.userId },
+      query,
       { status, notes },
       { new: true }
     ).populate(["invoiceId", "clientId"]);
@@ -156,10 +159,10 @@ exports.updatePayment = async (req, res) => {
 // Delete payment
 exports.deletePayment = async (req, res) => {
   try {
-    const payment = await Payment.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const query = req.userRole === "client"
+      ? { _id: req.params.id, clientId: req.clientId }
+      : { _id: req.params.id };
+    const payment = await Payment.findOne(query);
 
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
