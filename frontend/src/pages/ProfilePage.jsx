@@ -131,11 +131,21 @@ const ProfilePage = ({ onLogout }) => {
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const nextAvatar = String(reader.result || "");
       setAvatar(nextAvatar);
-      persistUser({ name, email, avatar: nextAvatar });
-      setAvatarNotice("Profile picture updated. Click 'Save Changes' to persist to your account.");
+      setAvatarNotice("Uploading...");
+
+      try {
+        // Auto-save the picture to backend immediately
+        const response = await authAPI.updateProfile(name, nextAvatar);
+        const updatedUser = response.data?.user || {};
+        persistUser({ ...updatedUser, avatar: updatedUser.profileImage || nextAvatar });
+        setAvatarNotice("✓ Profile picture updated successfully!");
+        setTimeout(() => setAvatarNotice(""), 3000);
+      } catch (err) {
+        setAvatarNotice("Failed to save picture. Try again.");
+      }
     };
     reader.onerror = () => {
       setAvatarNotice("Could not read selected image. Please try again.");
