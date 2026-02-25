@@ -71,7 +71,8 @@ const ProfilePage = ({ onLogout }) => {
         const profile = response.data || {};
         setName(profile.name || storedUser?.name || "User");
         setEmail(profile.email || storedUser?.email || "user@example.com");
-        persistUser({ name: profile.name, email: profile.email, role: profile.role });
+        setAvatar(profile.profileImage || storedUser?.avatar || "");
+        persistUser({ name: profile.name, email: profile.email, avatar: profile.profileImage, role: profile.role });
       } catch (err) {
         setError(err.response?.data?.message || "Unable to load profile");
       } finally {
@@ -104,9 +105,9 @@ const ProfilePage = ({ onLogout }) => {
 
     setSaving(true);
     try {
-      const response = await authAPI.updateProfile(name);
+      const response = await authAPI.updateProfile(name, avatar);
       const updatedUser = response.data?.user || { name };
-      persistUser({ ...updatedUser, avatar });
+      persistUser({ ...updatedUser, avatar: updatedUser.profileImage || avatar });
       setSaved(true);
       setTimeout(() => setSaved(false), 1800);
     } catch (err) {
@@ -134,7 +135,7 @@ const ProfilePage = ({ onLogout }) => {
       const nextAvatar = String(reader.result || "");
       setAvatar(nextAvatar);
       persistUser({ name, email, avatar: nextAvatar });
-      setAvatarNotice("Profile picture updated.");
+      setAvatarNotice("Profile picture updated. Click 'Save Changes' to persist to your account.");
     };
     reader.onerror = () => {
       setAvatarNotice("Could not read selected image. Please try again.");

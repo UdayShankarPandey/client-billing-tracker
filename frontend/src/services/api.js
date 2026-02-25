@@ -21,7 +21,7 @@ export const authAPI = {
     apiClient.post("/auth/register", { name, email, password }),
   login: (email, password, role) => apiClient.post("/auth/login", { email, password, role }),
   getProfile: () => apiClient.get("/auth/profile"),
-  updateProfile: (name) => apiClient.put("/auth/profile", { name }),
+  updateProfile: (name, profileImage) => apiClient.put("/auth/profile", { name, profileImage }),
   getUsers: () => apiClient.get("/auth/users"),
   updateUserRole: (id, role) => apiClient.put(`/auth/users/${id}/role`, { role }),
   deleteUser: (id) => apiClient.delete(`/auth/users/${id}`),

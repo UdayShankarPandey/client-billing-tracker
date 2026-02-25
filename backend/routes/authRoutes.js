@@ -96,6 +96,7 @@ router.post("/login", async (req, res) => {
         email: user.email,
         role: user.role,
         clientId,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
@@ -119,11 +120,11 @@ router.get("/profile", authMiddleware, async (req, res) => {
 // UPDATE PROFILE
 router.put("/profile", authMiddleware, async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, profileImage } = req.body;
 
     const user = await User.findByIdAndUpdate(
       req.userId,
-      { name },
+      { name, profileImage },
       { new: true, runValidators: true }
     ).select("-password");
 

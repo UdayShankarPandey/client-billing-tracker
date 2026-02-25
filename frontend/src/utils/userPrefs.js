@@ -39,7 +39,9 @@ export const saveUserPrefs = (userOrEmail, updates = {}) => {
 
 export const mergeUserWithPrefs = (user = {}) => {
   const prefs = getUserPrefs(user);
-  return { ...user, ...prefs };
+  // Map profileImage from API to avatar for frontend compatibility
+  const userWithAvatar = { ...user, avatar: user.profileImage || user.avatar };
+  return { ...userWithAvatar, ...prefs };
 };
 
 export const persistCurrentUserSnapshot = () => {
